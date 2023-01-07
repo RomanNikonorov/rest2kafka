@@ -22,17 +22,17 @@ func init() {
 	flag.IntVar(&gorutinesNumber, "gn", 2, "Gorutines number")
 }
 
-func processMessage(message map[string]interface{}, jsonEncoder *json.Encoder) {
-	encodeErr := jsonEncoder.Encode(message)
+func processMessage(message *map[string]interface{}, jsonEncoder *json.Encoder) {
+	encodeErr := jsonEncoder.Encode(*message)
 	if encodeErr != nil {
 		panic(encodeErr)
 	}
 }
 
-func processMessages(messages []map[string]interface{}, w http.ResponseWriter) {
-	jsonEncoder := json.NewEncoder(w)
-	for _, messageToSend := range messages {
-		processMessage(messageToSend, jsonEncoder)
+func processMessages(messages *[]map[string]interface{}, responseWriter *http.ResponseWriter) {
+	jsonEncoder := json.NewEncoder(*responseWriter)
+	for _, messageToSend := range *messages {
+		processMessage(&messageToSend, jsonEncoder)
 	}
 }
 
@@ -43,7 +43,7 @@ var requestHandler = func (w http.ResponseWriter, req *http.Request)  {
 	if decodeErr != nil {
 		panic(decodeErr)
 	}
-	processMessages(decodedMessage.Messages, w)
+	processMessages(&decodedMessage.Messages, &w)
 }
 
 func main() {
