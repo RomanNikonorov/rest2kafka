@@ -11,10 +11,14 @@ import (
 var kafkaServerAddress string
 var gorutinesNumber int
 
-type requestStructure struct {
-	Topic string
-	Header string
-	Messages []map[string]interface{}
+type MessageStructure struct {
+	Message json.RawMessage `json:"message"`
+	Header string `json:"header"`
+}
+
+type RequestStructure struct {
+	Topic string `json:"topic"` 
+	Messages []MessageStructure `json:"messages"`
 }
 
 func init() {
@@ -22,14 +26,14 @@ func init() {
 	flag.IntVar(&gorutinesNumber, "gn", 2, "Gorutines number")
 }
 
-func processMessage(message *map[string]interface{}, jsonEncoder *json.Encoder) {
-	encodeErr := jsonEncoder.Encode(*message)
+func processMessage(message *MessageStructure, jsonEncoder *json.Encoder) {
+	encodeErr := jsonEncoder.Encode(&message.Message)
 	if encodeErr != nil {
 		panic(encodeErr)
 	}
 }
 
-func processMessages(messages *[]map[string]interface{}, responseWriter *http.ResponseWriter) {
+func processMessages(messages *[]MessageStructure, responseWriter *http.ResponseWriter) {
 	jsonEncoder := json.NewEncoder(*responseWriter)
 	for _, messageToSend := range *messages {
 		processMessage(&messageToSend, jsonEncoder)
@@ -38,7 +42,7 @@ func processMessages(messages *[]map[string]interface{}, responseWriter *http.Re
 
 var requestHandler = func (w http.ResponseWriter, req *http.Request)  {
 	jsonDecoder := json.NewDecoder(req.Body)
-	var decodedMessage requestStructure
+	var decodedMessage RequestStructure
 	decodeErr := jsonDecoder.Decode(&decodedMessage)
 	if decodeErr != nil {
 		panic(decodeErr)
