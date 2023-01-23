@@ -10,7 +10,6 @@ import (
 )
 
 var kafkaServerAddress string
-var gorutinesNumber int
 
 type MessageStructure struct {
 	Message json.RawMessage `json:"message"`
@@ -24,7 +23,6 @@ type RequestStructure struct {
 
 func init() {
 	flag.StringVar(&kafkaServerAddress, "ksa", "localhost:9092", "Kafka Server Address")
-	flag.IntVar(&gorutinesNumber, "gn", 2, "Gorutines number")
 }
 
 func processMessage(message *MessageStructure, jsonEncoder *json.Encoder, topic string) {
@@ -73,8 +71,6 @@ var requestHandler = func (w http.ResponseWriter, req *http.Request)  {
 func main() {
 	flag.Parse()
 	fmt.Printf("Working with kafka server %s\n", kafkaServerAddress)
-	fmt.Printf("Working with %d gorutines\n", gorutinesNumber)
-
 	http.HandleFunc("/send", requestHandler)
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
