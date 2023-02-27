@@ -2,7 +2,7 @@ FROM golang:alpine AS builder
 WORKDIR /build
 ADD go.mod .
 COPY . .
-RUN go build -o rest2kafka rest2kafka.go
+RUN go build -o rest2kafka .
 
 FROM alpine
 WORKDIR /build
