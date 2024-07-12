@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/Shopify/sarama"
+	"github.com/IBM/sarama"
 )
 
 var (
@@ -25,7 +25,7 @@ func processMessages(messages *[]MessageStructure, responseWriter *http.Response
 	conf.Producer.RequiredAcks = sarama.WaitForAll
 	conf.Producer.Return.Successes = true
 	conf.Metadata.Full = true
-	conf.Version = sarama.V0_10_0_0
+	conf.Version = sarama.V3_6_0_0
 
 	if *userName != "" && *passwd != "" {
 		conf.Net.SASL.Enable = true
@@ -56,9 +56,9 @@ func processMessages(messages *[]MessageStructure, responseWriter *http.Response
 	messagesToSend := prepareMessages(messages, topic)
 	sendingError := producer.SendMessages(messagesToSend)
 	if sendingError != nil {
-		log.Printf("FAILED to send messages: %s\n", sendingError)
 		var responseErr string
 		for _, e := range sendingError.(sarama.ProducerErrors) {
+			log.Printf("FAILED to send message: %s\n", e)
 			responseErr = responseErr + e.Err.Error() + "\n"
 		}
 		return responseErr
@@ -86,5 +86,5 @@ func main() {
 	flag.Parse()
 	fmt.Printf("Working with brokers %s\n", *brokers)
 	http.HandleFunc("/send", requestHandler)
-	log.Fatal(http.ListenAndServe(":8082", nil))
+	log.Fatal(http.ListenAndServe(":8083", nil))
 }

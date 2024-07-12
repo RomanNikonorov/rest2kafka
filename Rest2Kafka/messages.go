@@ -1,6 +1,6 @@
 package main
 
-import "github.com/Shopify/sarama"
+import "github.com/IBM/sarama"
 
 func prepareMessage(message *MessageStructure, topic string) *sarama.ProducerMessage {
 	messageString := string(message.Message)
