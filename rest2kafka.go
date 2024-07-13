@@ -86,5 +86,5 @@ func main() {
 	flag.Parse()
 	fmt.Printf("Working with brokers %s\n", *brokers)
 	http.HandleFunc("/send", requestHandler)
-	log.Fatal(http.ListenAndServe(":8083", nil))
+	log.Fatal(http.ListenAndServe(":8080", nil))
 }
