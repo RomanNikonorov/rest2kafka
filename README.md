@@ -23,3 +23,12 @@ Clone the repository to your local machine:
 git clone https://github.com/yourusername/rest2kafka.git
 cd rest2kafka
 ```
+
+## Running the Application
+
+To run the application with all necessary parameters in a single line, navigate to the project's root directory and execute the following command:
+
+```bash
+go run rest2kafka.go -brokers your_kafka_broker_address -user your_sasl_username -password your_sasl_password
+```
+Replace your_kafka_broker_address, your_kafka_topic, your_sasl_username, and your_sasl_password with your actual Kafka configuration details.

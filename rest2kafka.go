@@ -15,11 +15,10 @@ var (
 	userName   = flag.String("username", "", "The SASL username")
 	passwd     = flag.String("passwd", "", "The SASL password")
 	brokers    = flag.String("brokers", "localhost:9092", "The Kafka brokers to connect to, as a comma separated list")
-	encription = flag.String("encription", "256", "Encription mode 256 or 512")
+	encription = flag.String("encryption", "256", "Encryption mode 256 or 512")
 )
 
-func processMessages(messages *[]MessageStructure, responseWriter *http.ResponseWriter, topic string) string {
-	//jsonEncoder := json.NewEncoder(*responseWriter)
+func processMessages(messages *[]MessageStructure, topic string) (*string, error) {
 	conf := sarama.NewConfig()
 	conf.Producer.Retry.Max = 1
 	conf.Producer.RequiredAcks = sarama.WaitForAll
@@ -61,10 +60,11 @@ func processMessages(messages *[]MessageStructure, responseWriter *http.Response
 			log.Printf("FAILED to send message: %s\n", e)
 			responseErr = responseErr + e.Err.Error() + "\n"
 		}
-		return responseErr
+		return nil, fmt.Errorf(responseErr)
 	} else {
 		log.Printf("Messages sent")
-		return "Sent"
+		answer := "Sent"
+		return &answer, nil
 	}
 }
 
@@ -75,8 +75,13 @@ var requestHandler = func(w http.ResponseWriter, req *http.Request) {
 	if decodeErr != nil {
 		panic(decodeErr)
 	}
-	resp := processMessages(&decodedMessage.Messages, &w, decodedMessage.Topic)
-	_, err := w.Write([]byte(resp))
+	resp, respError := processMessages(&decodedMessage.Messages, decodedMessage.Topic)
+	var err error
+	if respError != nil {
+		_, err = w.Write([]byte(respError.Error()))
+		// TODO: handle error
+	}
+	_, err = w.Write([]byte(*resp))
 	if err != nil {
 		return
 	}
