@@ -1,7 +1,7 @@
 FROM golang:alpine AS builder
 WORKDIR /build
-ENV CGO_ENABLED 0
-ENV GOOS linux
+ENV CGO_ENABLED=0
+ENV GOOS=linux
 ADD go.mod .
 ADD go.sum .
 RUN go mod download
