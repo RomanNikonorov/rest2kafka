@@ -78,13 +78,18 @@ var requestHandler = func(w http.ResponseWriter, req *http.Request) {
 	resp, respError := processMessages(&decodedMessage.Messages, decodedMessage.Topic)
 	var err error
 	if respError != nil {
+		// error handling
 		_, err = w.Write([]byte(respError.Error()))
-		// TODO: handle error
+		w.WriteHeader(http.StatusInternalServerError)
+	} else {
+		// success handling
+		_, err = w.Write([]byte(*resp))
+		w.WriteHeader(http.StatusOK)
 	}
-	_, err = w.Write([]byte(*resp))
 	if err != nil {
-		return
+		log.Printf("Error writing response: %s\n", err)
 	}
+	return
 }
 
 func main() {
