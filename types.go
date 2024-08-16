@@ -7,6 +7,7 @@ import (
 type MessageStructure struct {
 	Message json.RawMessage `json:"message"`
 	Header  string          `json:"header"`
+	Key     string          `json:"key"`
 }
 
 type RequestStructure struct {

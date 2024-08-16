@@ -4,7 +4,7 @@ import "github.com/IBM/sarama"
 
 func prepareMessage(message *MessageStructure, topic string) *sarama.ProducerMessage {
 	messageString := string(message.Message)
-	producerMessage := &sarama.ProducerMessage{Topic: topic, Value: sarama.StringEncoder(messageString)}
+	producerMessage := &sarama.ProducerMessage{Topic: topic, Value: sarama.StringEncoder(messageString), Key: sarama.StringEncoder(message.Key)}
 	return producerMessage
 }
 
